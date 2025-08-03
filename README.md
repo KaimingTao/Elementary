@@ -13,7 +13,9 @@ Things are complicated because things can go in diferent ways, and the number is
 
 I find some elementary thinking tools from real life experience, based on them I can build tools to solve real world questions. I'd like to share with you and hope they can **help you build your thinking tools**.
 
-The goal of this project is to provide a simple guideline that is easy to understand and follow. I'm trying to make it concise and communicate efficiently. Each thinking tool contains two parts, the main part contains key points for quick check, the attached link as second part describe reasons in detail you can check if you want.
+The goal of this project is to provide a simple guideline that is easy to understand and follow. I'm trying to make it concise and communicate efficiently. Each thinking tool contains two parts, the main part contains key points for quick check, the attached link as second part describe reasons in detail you can check if you want. 
+
+Another reason I make things simple is, there's no universal way. Knowledge is scattered everywhere. Ubiquitous theorise is too faraway to be used to achive real-world goals, if they really exits. As long as tricks work, it's good.
 
 There're many different ways to see these thinking tools. I'll try to illustrate them in different media. It helps me see things in different angles and refine them, second it trains my skill of communicating concisely. Balancing them simple for understanding is hard, I'll try.
 
