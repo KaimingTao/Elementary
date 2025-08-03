@@ -79,6 +79,13 @@ Because any kind of complex object, no matter how large or how small, they're bu
     - different narratives
 
 
+## Learn
+
+- Tricks, tips, even it's not systematic, as long as they help to achive the goal, that's good
+- At start, we minic they way people do and they way people think,
+    - then we think our way, some better way, remove something we don't like
+
+
 ## How to be better
 
 
