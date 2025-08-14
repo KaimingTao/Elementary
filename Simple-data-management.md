@@ -75,3 +75,9 @@ Things are evolving, so the best way is that we have clear mind, and understand 
     - I don't fully trust them because it's a black box
     - The cloud storage is mostly bigger than the storage size of your local computer, so the true file won't be stored in your local machine by just a placeholder, when you access it, the software will download it. Which means for file you always want to access even without internet, It's not a good solution.
 - For important data, store self-encrypted version in cloud service, and also a local copy.
+
+## Personal data storage is a distributed system.
+
+We store data in our phones, computers, or cloud services. Hence it's distributed everywhere. So, folder or files that are copies won't be updated at the same time. We cannot be sure all of them can be accessed all the time. Even we have a method to synchornize all devices, it may fail and some backup may broken.
+
+We should accept it, and make sure the important thing is to use our data to finish our work. Not pay to much time to make the system perfect, because the cost won't profit much.
