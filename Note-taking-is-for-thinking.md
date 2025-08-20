@@ -10,6 +10,8 @@ I guess sometimes people get confused by their notes and the things they want to
 
 Using AI to take notes means, lack of thinking, it's not note taking. Notes remind us the thing we don't have to remember, and mind can use it's power more for thinking.
 
+A frequently seen idea is "get most out of something", but that's wrong, the question is always what is important to us, because most thing we get won't matter.
+
 ## Don't take notes for everything
 
 - The number of ways to combine ideas or knowledge is bigger bigger bigger than the number of atoms in this universe
