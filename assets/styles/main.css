@@ -162,6 +162,13 @@ body {
   border-top: 1px solid var(--surface-muted);
 }
 
+.site-footer__disclaimer {
+  margin: 0 0 0.75rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .site-footer__text {
   margin: 0;
   text-align: center;
