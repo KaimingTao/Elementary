@@ -1,3 +1,4 @@
+/* global __CARDS_LAST_MODIFIED__ */
 import { fetchCards, renderCardGrid } from './cards.js';
 import { createModalController } from './modal.js';
 
@@ -20,7 +21,14 @@ if (siteUpdate) {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
-  siteUpdate.textContent = `Last updated ${formatter.format(new Date())}`;
+
+  const lastUpdatedSource = typeof __CARDS_LAST_MODIFIED__ !== 'undefined' ? __CARDS_LAST_MODIFIED__ : null;
+  const parsedLastUpdated = typeof lastUpdatedSource === 'string' ? new Date(lastUpdatedSource) : null;
+  const resolvedDate = parsedLastUpdated && !Number.isNaN(parsedLastUpdated.getTime())
+    ? parsedLastUpdated
+    : new Date();
+
+  siteUpdate.textContent = `Last updated ${formatter.format(resolvedDate)}`;
 }
 
 if (siteYear) {
