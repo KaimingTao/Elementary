@@ -15,6 +15,8 @@ if (!modalRoot) {
   throw new Error('Missing #modal-root container');
 }
 
+let updateSiteUpdateText = () => {};
+
 if (siteUpdate) {
   const locale = typeof navigator !== 'undefined' && navigator.language ? navigator.language : 'en-US';
   const formatter = new Intl.DateTimeFormat(locale, {
@@ -28,7 +30,19 @@ if (siteUpdate) {
     ? parsedLastUpdated
     : new Date();
 
-  siteUpdate.textContent = `Last updated ${formatter.format(resolvedDate)}`;
+  const baseText = `Last updated ${formatter.format(resolvedDate)}`;
+
+  updateSiteUpdateText = (cardCount) => {
+    if (typeof cardCount === 'number' && Number.isFinite(cardCount)) {
+      const label = cardCount === 1 ? 'card' : 'cards';
+      siteUpdate.textContent = `${baseText} • ${cardCount} ${label}`;
+      return;
+    }
+
+    siteUpdate.textContent = baseText;
+  };
+
+  updateSiteUpdateText();
 }
 
 if (siteYear) {
@@ -172,6 +186,7 @@ searchForm.addEventListener('input', () => {
 fetchCards()
   .then((cards) => {
     cachedCards = cards;
+    updateSiteUpdateText(cards.length);
     renderTagFilters(cards);
     applyFilters();
   })

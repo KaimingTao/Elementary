@@ -33,6 +33,145 @@ function normalizeToText(value) {
   return '';
 }
 
+function createFormattedFragment(text) {
+  const fragment = document.createDocumentFragment();
+  if (!text) {
+    return fragment;
+  }
+
+  const pattern = /(\*\*[^*]+?\*\*|__[^_]+?__|\*[^*]+?\*|_[^_]+?_|`[^`]+?`)/g;
+
+  let lastIndex = 0;
+  let match = pattern.exec(text);
+  while (match) {
+    const { index } = match;
+    if (index > lastIndex) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex, index)));
+    }
+
+    const token = match[0];
+    let element = null;
+    let content = '';
+
+    if ((token.startsWith('**') && token.endsWith('**')) || (token.startsWith('__') && token.endsWith('__'))) {
+      content = token.slice(2, -2);
+      element = document.createElement('strong');
+    } else if ((token.startsWith('*') && token.endsWith('*')) || (token.startsWith('_') && token.endsWith('_'))) {
+      content = token.slice(1, -1);
+      element = document.createElement('em');
+    } else if (token.startsWith('`') && token.endsWith('`')) {
+      content = token.slice(1, -1);
+      element = document.createElement('code');
+    }
+
+    if (element) {
+      element.textContent = content;
+      fragment.appendChild(element);
+    } else {
+      fragment.appendChild(document.createTextNode(token));
+    }
+
+    lastIndex = pattern.lastIndex;
+    match = pattern.exec(text);
+  }
+
+  if (lastIndex < text.length) {
+    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+  }
+
+  return fragment;
+}
+
+function appendFormattedText(target, text) {
+  if (!target) {
+    return;
+  }
+
+  const safeText = typeof text === 'string' ? text : '';
+  if (!safeText) {
+    return;
+  }
+
+  target.appendChild(createFormattedFragment(safeText));
+}
+
+function appendMarkdownDetails(target, text) {
+  if (!target || typeof text !== 'string' || text.trim() === '') {
+    return false;
+  }
+
+  const fragment = document.createDocumentFragment();
+  const lines = text.split(/\r?\n/);
+
+  let currentList = null;
+  let paragraphBuffer = [];
+
+  const flushList = () => {
+    if (currentList && currentList.children.length > 0) {
+      fragment.appendChild(currentList);
+    }
+    currentList = null;
+  };
+
+  const flushParagraph = () => {
+    if (paragraphBuffer.length === 0) {
+      return;
+    }
+    const paragraph = document.createElement('p');
+    appendFormattedText(paragraph, paragraphBuffer.join(' '));
+    fragment.appendChild(paragraph);
+    paragraphBuffer = [];
+  };
+
+  lines.forEach((rawLine) => {
+    const line = typeof rawLine === 'string' ? rawLine.trim() : '';
+    if (!line) {
+      flushList();
+      flushParagraph();
+      return;
+    }
+
+    if (/^%%.*%%$/.test(line)) {
+      return;
+    }
+
+    if (/^---+$/.test(line)) {
+      flushList();
+      flushParagraph();
+      return;
+    }
+
+    const listMatch = line.match(/^[-*+]\s+(.*)$/);
+    if (listMatch) {
+      flushParagraph();
+      if (!currentList) {
+        currentList = document.createElement('ul');
+        currentList.className = 'modal__list';
+      }
+      const listItemText = listMatch[1].trim();
+      if (listItemText) {
+        const listItem = document.createElement('li');
+        appendFormattedText(listItem, listItemText);
+        currentList.appendChild(listItem);
+      }
+      return;
+    }
+
+    flushList();
+    paragraphBuffer.push(line);
+  });
+
+  flushList();
+  flushParagraph();
+
+  if (fragment.childNodes.length === 0) {
+    return false;
+  }
+
+  target.appendChild(fragment);
+  return true;
+}
+
 function getFocusableElements(container) {
   return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
     (element) => element.offsetParent !== null,
@@ -209,17 +348,21 @@ export function createModalController(root) {
           list.className = 'modal__list';
           items.forEach((item) => {
             const listItem = document.createElement('li');
-            listItem.textContent = item;
+            appendFormattedText(listItem, item);
             list.appendChild(listItem);
           });
           content.appendChild(list);
         } else {
-          content.textContent = detailsTextForFallback
+          const fallbackText = detailsTextForFallback
             || (summaryTextCandidate ?? '');
+          appendFormattedText(content, fallbackText);
         }
       } else {
         const detailsText = detailsTextForFallback || summaryTextCandidate || '';
-        content.textContent = detailsText;
+        const renderedMarkdown = appendMarkdownDetails(content, detailsText);
+        if (!renderedMarkdown) {
+          appendFormattedText(content, detailsText);
+        }
       }
       if (card.backgroundColor) {
         dialog.style.background = card.backgroundColor;

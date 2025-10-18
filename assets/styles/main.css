@@ -388,7 +388,7 @@ body {
 .modal {
   background: var(--surface);
   border-radius: var(--radius);
-  max-width: min(640px, 90vw);
+  max-width: min(700px, 90vw);
   width: 100%;
   display: grid;
   gap: 1rem;
