@@ -105,7 +105,11 @@ async function loadFromImport() {
   try {
     const module = await import('../data/cards.json');
     const payload = module.default ?? module;
-    return normalizeCards(payload);
+    if (!Array.isArray(payload)) {
+      return null;
+    }
+
+    return payload;
   } catch (error) {
     console.warn('Falling back to network fetch for cards', error);
     return null;
@@ -120,7 +124,21 @@ async function loadFromNetwork() {
   }
 
   const payload = await response.json();
-  return normalizeCards(payload);
+  if (!Array.isArray(payload)) {
+    return [];
+  }
+
+  return payload;
+}
+
+export function prepareCards(rawCards, { shuffle = true } = {}) {
+  const normalized = normalizeCards(rawCards);
+
+  if (!shuffle) {
+    return normalized;
+  }
+
+  return shuffleCards(normalized);
 }
 
 export async function fetchCards() {
@@ -130,12 +148,12 @@ export async function fetchCards() {
 
   const imported = await loadFromImport();
   if (imported && imported.length > 0) {
-    cardsCache = shuffleCards(imported);
+    cardsCache = prepareCards(imported, { shuffle: true });
     return cardsCache;
   }
 
   const networkCards = await loadFromNetwork();
-  cardsCache = shuffleCards(networkCards);
+  cardsCache = prepareCards(networkCards, { shuffle: true });
   return cardsCache;
 }
 

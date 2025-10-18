@@ -1,5 +1,5 @@
 /* global __CARDS_LAST_MODIFIED__ */
-import { fetchCards, renderCardGrid } from './cards.js';
+import { fetchCards, renderCardGrid, prepareCards } from './cards.js';
 import { createModalController } from './modal.js';
 
 const app = document.getElementById('app');
@@ -49,6 +49,8 @@ if (siteYear) {
   siteYear.textContent = new Date().getFullYear();
 }
 
+const headerCta = document.querySelector('.site-header__cta');
+
 const modal = createModalController(modalRoot);
 modal.init();
 
@@ -77,6 +79,48 @@ searchForm.innerHTML = `
 const searchInput = searchForm.querySelector('#search-input');
 if (!searchInput) {
   throw new Error('Missing search input');
+}
+
+const uploadInput = document.createElement('input');
+uploadInput.type = 'file';
+uploadInput.accept = 'application/json,.json';
+uploadInput.id = 'cards-upload';
+uploadInput.hidden = true;
+
+const uploadButton = document.createElement('button');
+uploadButton.type = 'button';
+uploadButton.textContent = 'Upload cards';
+
+uploadButton.addEventListener('click', () => {
+  uploadInput.click();
+});
+
+if (headerCta) {
+  uploadButton.className = 'site-header__button site-header__button--secondary';
+
+  const browseButton = headerCta.querySelector('.site-header__button');
+  const footerNote = headerCta.querySelector('.site-header__cta-note');
+
+  if (browseButton) {
+    browseButton.insertAdjacentElement('afterend', uploadButton);
+  } else if (footerNote) {
+    headerCta.insertBefore(uploadButton, footerNote);
+  } else {
+    headerCta.appendChild(uploadButton);
+  }
+
+  if (footerNote) {
+    headerCta.insertBefore(uploadInput, footerNote);
+  } else {
+    headerCta.appendChild(uploadInput);
+  }
+} else {
+  uploadButton.className = 'toolbar__button';
+  const uploadControls = document.createElement('div');
+  uploadControls.className = 'toolbar__actions';
+  uploadControls.appendChild(uploadButton);
+  uploadControls.appendChild(uploadInput);
+  searchForm.appendChild(uploadControls);
 }
 
 const cardsContainer = document.createElement('div');
@@ -181,6 +225,73 @@ function applyFilters() {
 
 searchForm.addEventListener('input', () => {
   applyFilters();
+});
+
+function reportUploadError(message) {
+  if (siteUpdate) {
+    siteUpdate.textContent = message;
+  }
+}
+
+function hydrateFromUploadedCards(rawCards) {
+  if (!Array.isArray(rawCards)) {
+    throw new Error('Cards file must contain a JSON array.');
+  }
+
+  const prepared = prepareCards(rawCards, { shuffle: false });
+  cachedCards = prepared;
+  activeTag = '';
+  searchInput.value = '';
+  renderTagFilters(prepared);
+  updateSiteUpdateText(prepared.length);
+
+  if (siteUpdate) {
+    siteUpdate.textContent = `${siteUpdate.textContent} • Loaded from file`;
+  }
+
+  applyFilters();
+}
+
+function handleFileSelection(file) {
+  const reader = new FileReader();
+
+  const resetInput = () => {
+    uploadInput.value = '';
+  };
+
+  reader.addEventListener('error', () => {
+    resetInput();
+    reportUploadError(`Failed to read ${file.name}.`);
+  });
+
+  reader.addEventListener('load', (event) => {
+    resetInput();
+
+    try {
+      const textContent = typeof event.target?.result === 'string' ? event.target.result : '';
+      if (!textContent.trim()) {
+        throw new Error('Cards file was empty.');
+      }
+
+      const parsed = JSON.parse(textContent);
+      hydrateFromUploadedCards(parsed);
+    } catch (error) {
+      console.error('Failed to load cards file', error);
+      const message = error instanceof Error ? error.message : String(error);
+      reportUploadError(`Failed to load cards: ${message}`);
+    }
+  });
+
+  reader.readAsText(file);
+}
+
+uploadInput.addEventListener('change', () => {
+  const [file] = uploadInput.files ?? [];
+  if (!file) {
+    return;
+  }
+
+  handleFileSelection(file);
 });
 
 fetchCards()

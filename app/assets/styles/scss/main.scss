@@ -33,3 +33,37 @@ body {
 .card {
   background: var(--card-background, #ffffff);
 }
+
+.site-header__button--secondary {
+  background: rgba(248, 251, 255, 0.82);
+}
+
+.toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.toolbar__button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background-color 150ms ease, transform 150ms ease;
+
+  &:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+}
