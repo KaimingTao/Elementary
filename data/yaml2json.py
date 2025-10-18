@@ -21,7 +21,7 @@ def normalize_tags(raw_value, delimiter):
         candidate = raw_value.strip()
         if not candidate:
             return []
-        values = [part.strip() for part in candidate.split(delimiter)]
+        values = [part.strip().capitalize() for part in candidate.split(delimiter)]
     elif isinstance(raw_value, (list, tuple)):
         values = []
         for item in raw_value:
@@ -29,7 +29,7 @@ def normalize_tags(raw_value, delimiter):
                 continue
             text = str(item).strip()
             if text:
-                values.append(text)
+                values.append(text.capitalize())
     else:
         raise TypeError('Expected "tags" to be a string or list')
 
@@ -97,6 +97,8 @@ def convert_yaml_to_json(yaml_path, json_path, *, tag_delimiter):
             'details': details,
             'tags': normalize_tags(raw_card.get('tags'), tag_delimiter),
         }
+        if not card['tags']:
+            print(card['title'], '| no tags')
 
         summary = str(raw_card.get('summary') or '').strip()
         if summary:
