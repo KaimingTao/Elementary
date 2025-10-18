@@ -70,7 +70,8 @@ def build_image_payload(raw_card):
     return payload
 
 
-def convert_yaml_to_json(yaml_path, json_path, *, tag_delimiter):
+def convert_yaml_to_json(yaml_path, tag_delimiter):
+    json_path = yaml_path.parent / f"{yaml_path.stem}.json"
     if not yaml_path.exists():
         raise FileNotFoundError(f'YAML source not found: {yaml_path}')
 
@@ -126,13 +127,6 @@ def main():
         help='Path to the source YAML (default: data/cards.yaml)',
     )
     parser.add_argument(
-        '-o',
-        '--output',
-        default='cards.json',
-        type=Path,
-        help='Destination JSON file (default: data/cards.json)',
-    )
-    parser.add_argument(
         '-t',
         '--tag-delimiter',
         default=',',
@@ -141,7 +135,7 @@ def main():
 
     args = parser.parse_args()
 
-    convert_yaml_to_json(args.input, args.output, tag_delimiter=args.tag_delimiter)
+    convert_yaml_to_json(args.input, tag_delimiter=args.tag_delimiter)
 
 
 if __name__ == '__main__':

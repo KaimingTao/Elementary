@@ -37,6 +37,7 @@ def reformat_yaml(yaml_path):
         if c.get("details")
     ]
 
+    print('# Cards', len(cards))
     if not isinstance(cards, list):
         raise ValueError("The YAML root must be a list of cards")
 

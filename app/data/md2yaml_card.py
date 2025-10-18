@@ -3,6 +3,17 @@ from pathlib import Path
 from datetime import datetime
 
 
+class LiteralString(str):
+    pass
+
+
+def literal_str_representer(dumper, data):
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+
+
+yaml.add_representer(LiteralString, literal_str_representer)
+
+
 def md2yaml_card(file_path):
     cards = []
     with open(file_path) as fd:
@@ -24,8 +35,8 @@ def md2yaml_card(file_path):
         card = cards[i]
         title = card[0].replace("##", "").strip()
         tags = []
-        if "tag:" in card[-1]:
-            tags = card[-1].replace("tag:", "").strip().split(",")
+        if "tags:" in card[-1]:
+            tags = card[-1].replace("tags:", "").strip().split(",")
             tags = [t.strip() for t in tags if t.strip()]
             details = card[1:-1]
         else:
@@ -34,7 +45,7 @@ def md2yaml_card(file_path):
         details = "\n".join(details)
         new_card = {"title": title}
         if details:
-            new_card["details"] = details
+            new_card["details"] = LiteralString(details)
         if tags:
             new_card["tags"] = tags
 
@@ -43,20 +54,27 @@ def md2yaml_card(file_path):
     return cards
 
 
-def main(folder, save_file=Path('new_cards.yaml')):
+def main(folder, save_file=Path("new_cards.yaml")):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     save_file = save_file.parent / f"{save_file.stem}-{timestamp}{save_file.suffix}"
 
     cards = []
     for file in folder.iterdir():
-        if file.suffix != '.md':
+        if file.suffix != ".md":
             continue
         print(file)
         cards.extend(md2yaml_card(file))
 
     with open(save_file, "w") as f:
-        yaml.dump(cards, f, default_flow_style=False, allow_unicode=True, sort_keys=False, indent=2)
+        yaml.dump(
+            cards,
+            f,
+            default_flow_style=False,
+            allow_unicode=True,
+            sort_keys=False,
+            indent=2,
+        )
 
 
 if __name__ == "__main__":
