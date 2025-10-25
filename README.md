@@ -2,6 +2,8 @@
 
 Idea collections for thinking.
 
+- [Main page](https://kaimingtao.github.io/Elementary/app/#app)
+
 
 
 ## YAML workflow
