@@ -26,6 +26,10 @@ def one_file(card_file):
             if tags:
                 fd.write(f'tags: {",".join(tags)}')
                 fd.write("\n")
+
+            fd.write('\n---\n')
+            fd.write('\n')
+
             fd.write("\n")
     return cards
 
