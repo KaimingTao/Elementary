@@ -212,25 +212,10 @@ function parseCardsMarkdown(markdownSource) {
     .filter((card) => card && typeof card.title === 'string');
 }
 
-export function parseCardsContent(rawContent, { format } = {}) {
+export function parseCardsContent(rawContent) {
   const text = typeof rawContent === 'string' ? rawContent.trim() : '';
   if (!text) {
     return [];
-  }
-
-  if (format === 'markdown') {
-    return parseCardsMarkdown(text);
-  }
-
-  if (format !== 'json') {
-    try {
-      const parsed = JSON.parse(text);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Fall back to Markdown parsing below.
-    }
   }
 
   return parseCardsMarkdown(text);
@@ -314,7 +299,7 @@ function loadFromBundle() {
     }
 
     const payload = typeof module === 'string' ? module : module.default ?? module;
-    return parseCardsContent(payload, { format: 'markdown' });
+    return parseCardsContent(payload);
   } catch (error) {
     console.warn('Unable to load cards bundle via import.meta.glob', error);
     return null;
@@ -329,7 +314,7 @@ async function loadFromNetwork() {
   }
 
   const payload = await response.text();
-  return parseCardsContent(payload, { format: 'markdown' });
+  return parseCardsContent(payload);
 }
 
 export function prepareCards(rawCards, { shuffle = true } = {}) {

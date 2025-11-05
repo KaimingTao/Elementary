@@ -82,7 +82,7 @@ if (!searchInput) {
 
 const uploadInput = document.createElement('input');
 uploadInput.type = 'file';
-uploadInput.accept = 'application/json,.json,text/markdown,.md';
+uploadInput.accept = 'text/markdown,.md';
 uploadInput.id = 'cards-upload';
 uploadInput.hidden = true;
 
