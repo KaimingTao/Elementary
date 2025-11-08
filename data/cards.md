@@ -1062,3 +1062,10 @@ tags: Serious
 
 ---
 
+
+## Core cards
+
+- Know ourselves
+- Learn how to communicate
+- Learn how to lead ourselves
+- Leanr how to be relaxed
